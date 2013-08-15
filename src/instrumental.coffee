@@ -19,19 +19,18 @@ write_line = (line) ->
 write_buffer = () ->
 	return if buffer.length is 0
 
-	buffer.forEach (v, k) ->
-		write_line v
-
+	c = buffer.slice 0
+	connect ->
+		socket.end c.join("\n")+"\n"
 	buffer = []
 
 queue_api = (method, args) ->
 	buffer.push(method + " " + args.join(" "))
 
 	if buffer.length > settings.max_queue_size
-		connect() if not socket_connected
-		write_buffer() if socket_connected
+		write_buffer()
 
-connect = () ->
+connect = (cb = null) ->
 	socket = net.createConnection port: settings.port, host: settings.hostname
 	socket.setEncoding 'ascii'
 
@@ -39,32 +38,27 @@ connect = () ->
 		write_line "hello version 1.0\n" + "authenticate #{settings.api_key}"
 
 	socket.on 'error', (err) ->
-		console.log err
-		throw err
 
 	socket.on 'close', (had_error) ->
 		socket_connected = false
-		connect() if had_error
 
 	socket.on 'data', (buffer) ->
 		if buffer is "ok\nok\n"
-			on_ready() if on_ready
+			on_ready(true) if on_ready
+			cb() if cb
 
 			socket_connected = true
 			write_buffer()
 
-		else if (""+buffer).indexOf("fail") > -1
+		else if buffer is "ok\nfail\n"
+			on_ready(false) if on_ready
 			socket_connected = false
 			socket.end()
-
-			throw "Invalid Instrumental App API Key";
 
 module.exports =
 	setup: (new_settings, ready = null) ->
 		on_ready = ready
 		_.extend settings, new_settings
-
-		connect()
 
 	flush: () -> write_buffer()
 
