@@ -2,6 +2,12 @@
 
 A node.js agent for instrumentalapp.com. It supports the full [collector protocol](https://instrumentalapp.com/docs/collector/readme).
 
+## Installation
+
+````
+npm install instrumental
+````
+
 ## Usage
 
 The only settings that should need changing are `api_key` and perhaps `max_queue_size` if you have very frequent/infrequent data.
