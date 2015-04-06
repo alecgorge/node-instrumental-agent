@@ -2,7 +2,7 @@
   "author": "Alec Gorge <alecgorge@gmail.com> (http://alecgorge.com/)",
   "name": "instrumental",
   "description": "An agent for instrumentalapp.com. Supports the full collector protocol.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/alecgorge/node-instrumental-agent.git"
